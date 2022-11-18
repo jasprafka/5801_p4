@@ -1,7 +1,7 @@
 import unittest
-import ProblemGenerator
+import SourceAnnotator
 
-class ProblemGeneratorTest(unittest.TestCase):
+class SourceAnnotatorTest(unittest.TestCase):
     def setUp(self):
         pass
 
