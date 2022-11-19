@@ -38,6 +38,9 @@ _COMMENTLESS_LINES = [
     "print('# some string')"
 ]
 
+_SELECTED_lINES = [1, 2, 2, 3, 4, 5, 6, 6]
+_LINE_TUPLE = (1, 2, 3, 4, 5, 6)
+
 class SourceAnnotatorTest(unittest.TestCase):
     """TestCase subclass to run unittests on all functions in SourceAnnotator."""
 
@@ -58,11 +61,21 @@ class SourceAnnotatorTest(unittest.TestCase):
         self.assertFalse(self.src_annotator.upload_file(_INVALID_PATH))
     
     def test_remove_line_comments(self):
-        self.assertEqual(SourceAnnotator._remove_line_comments(_CSTYLE_COMMENT_LINES, '//'), _CSTYLE_COMMENT_LINES[0:2])
-        self.assertEqual(SourceAnnotator._remove_line_comments(_PYTHONIC_COMMENT_LINES, '#'), _PYTHONIC_COMMENT_LINES[0:2])
-        self.assertEqual(SourceAnnotator._remove_line_comments(_COMMENTLESS_LINES, '#'), _COMMENTLESS_LINES)
-        self.assertEqual(SourceAnnotator._remove_line_comments(_COMMENTLESS_LINES, '//'), _COMMENTLESS_LINES)
-        
+        self.assertEqual(SourceAnnotator.remove_line_comments(_CSTYLE_COMMENT_LINES, '//'), _CSTYLE_COMMENT_LINES[0:2])
+        self.assertEqual(SourceAnnotator.remove_line_comments(_PYTHONIC_COMMENT_LINES, '#'), _PYTHONIC_COMMENT_LINES[0:2])
+        self.assertEqual(SourceAnnotator.remove_line_comments(_COMMENTLESS_LINES, '#'), _COMMENTLESS_LINES)
+        self.assertEqual(SourceAnnotator.remove_line_comments(_COMMENTLESS_LINES, '//'), _COMMENTLESS_LINES)
+    
+    def test_select_lines(self):
+        lines = self.src_annotator.select_lines(_SELECTED_lINES)
+        self.assertEqual(lines, set(_SELECTED_lINES))
+        self.assertNotEqual(lines, _SELECTED_lINES)
+    
+    def test_create_tuple(self):
+        self.src_annotator.select_lines(_SELECTED_lINES)
+        self.assertTupleEqual(self.src_annotator.create_tuple(), _LINE_TUPLE)
+        self.assertListEqual(self.src_annotator._line_tuples,[_LINE_TUPLE])
+
 
 
 if __name__ == "__main__":
