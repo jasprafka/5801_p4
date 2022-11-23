@@ -13,7 +13,17 @@ _LANG_COM_SYMS = {
 }
 
 def remove_line_comments(lines, comment_symbol) -> list:
+    """Remove all line comments from lines. comment_symbol indicates the line comment symbol
+    for the list of lines. Cleaned lines are returned as a list.
 
+    args:
+        lines: (list of str) The file lines to parse.
+        comment_symbol: (str) The line comment symbol.
+    
+    returns:
+        new_lines: (list of str) The list of lines sans line comments.
+    
+    """
     # If system could not remove line comments, just return all lines
     if not comment_symbol:
         return lines
@@ -59,11 +69,8 @@ class SourceAnnotator():
         self._file_type = path.rsplit('.', 1)[1]
 
         # Return True for successful file read. 
-        # NOTE: File cannot be empty
-        if len(self._file_lines) > 0:
-            return True
-        else:
-            return False
+        # NOTE: File may be empty
+        return True
     
     def strip_comments(self):
         comment_symbol = _LANG_COM_SYMS.get(self._file_type)
@@ -71,6 +78,7 @@ class SourceAnnotator():
         
     def select_lines(self, lines) -> list:
         """Updated which lines are selected. Ensure there are no duplicates in the set of selected lines.
+        Ensure all lines are within valid range (0 <= line_num < num_lines).
         
         args:
             lines: (list of int) The list of line numbers selected
@@ -78,7 +86,8 @@ class SourceAnnotator():
         returns:
             self._selected_lines: (list of int) The unique set of line numbers selected
         """
-        self._selected_lines = set(lines)
+        num_lines = len(self._file_lines)
+        self._selected_lines = sorted(list(set([line for line in lines if ((line < num_lines) and (line >= 0))])))
         return self._selected_lines
     
     def create_tuple(self) -> tuple:
