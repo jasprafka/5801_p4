@@ -9,7 +9,18 @@ where `<input-file-path>` is the path to the source code you wish to annotate. S
 **e.g. -**  
 `python3 ppalms.py test_files/test_code.cpp`  
 
-The program runs on the command line, offering several options for source code annotation (including the removal of line comments and forming line tuples).
+The program runs on the command line, offering several options for source code annotation and print out as the following menu (including the removal of line comments and forming line tuples).
+```
+1. Exit
+2. Print this menu
+3. Show file
+4. Strip line comments
+5. Select lines
+6. Show selected lines
+7. Create Tuple
+8. Get Tuples
+```
+The user can input numbers 1-8 to make a choice.
 
 ## -- How to run the testing Suite --  
 This software package uses the python `unittest` library for testing. The testing files included are `SourceAnnotatorTest.py` and `PpalmsTest.py`.  
