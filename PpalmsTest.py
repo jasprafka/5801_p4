@@ -39,8 +39,6 @@ class PpalmsTest(unittest.TestCase):
         pass
         
     
-    
-    
     def test_exit_ppalms(self):
     	capturedOutput = io.StringIO()
     	sys.stdout = capturedOutput
@@ -48,6 +46,7 @@ class PpalmsTest(unittest.TestCase):
     	self.assertEqual(_FUNCTIONS.get("1")(self.src_annotator), True)
     	sys.stdout = sys.__stdout__
     	self.assertEqual(capturedOutput.getvalue(), "Goodbye!\n")
+    	
     def test_print_menu(self):
     	capturedOutput = io.StringIO()
     	sys.stdout = capturedOutput
@@ -63,7 +62,7 @@ class PpalmsTest(unittest.TestCase):
     	self.assertEqual(_FUNCTIONS.get("3")(self.src_annotator), False)
     	sys.stdout = sys.__stdout__
     	
-    	# I don't think this is necessary
+    	# I don't think this is necessary, this part should be tested in SourceAnntatorTest.
     	self.assertEqual(capturedOutput.getvalue(), '\n0 #include <iostream>\n1 \n2 // Using namespace std is bad practice\n3 using namespace std;\n4 \n5 int main() {\n6     // Variable declarations\n7     int x = 0;\n8     int y = 0;\n9     int z = 0;\n10 \n11     // Variables must be declared before they are used\n12     cout << "x = " << x << endl;\n13     cout << "y = " << x << endl;\n14     cout << "z = " << x << endl;\n15 \n16     return 0;\n17 }\n')
     	
     def test_strip_comments(self):
@@ -73,7 +72,9 @@ class PpalmsTest(unittest.TestCase):
     	self.assertEqual(_FUNCTIONS.get("4")(self.src_annotator), False)
     	sys.stdout = sys.__stdout__
     
-    # Have no idea how to test this function yet.
+    # This test need the computer to input some words automatically, so it require some an extra package. 
+    # But this package "pyautogui" is not installed on our lab machine. 
+    # Hence, I comment out this test for now.
     
     #def test_select_lines(self):
     	#self.src_annotator.upload_file(VALID_CPP_PATH)
