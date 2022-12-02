@@ -59,15 +59,15 @@ class SourceAnnotatorTest(unittest.TestCase):
     
     def test_create_tuple(self):
         SourceAnnotator.tuple = MagicMock(return_value=(LINE_TUPLE_1))
-        self.assertTupleEqual(self.src_annotator.create_tuple(), (LINE_TUPLE_1))
-        self.assertTupleEqual(self.src_annotator._line_tuples[0], (LINE_TUPLE_1))
+        self.assertTupleEqual(self.src_annotator.create_problem(), (LINE_TUPLE_1))
+        self.assertTupleEqual(self.src_annotator._problems[0], (LINE_TUPLE_1))
         SourceAnnotator.tuple = tuple
         
     
     def test_get_tuples(self):
-        self.assertFalse(self.src_annotator._line_tuples)
-        self.src_annotator._line_tuples = [LINE_TUPLE_1]
-        self.assertListEqual(self.src_annotator.get_tuples(), [LINE_TUPLE_1])
+        self.assertFalse(self.src_annotator._problems)
+        self.src_annotator._problems = [LINE_TUPLE_1]
+        self.assertListEqual(self.src_annotator.get_probs(), [LINE_TUPLE_1])
 
     
     def test_get_lines(self):

@@ -1,5 +1,6 @@
 import re
 import os
+from Problem import Problem
 
 _LANG_COM_SYMS = {
     "cpp": "//",
@@ -43,7 +44,7 @@ class SourceAnnotator():
 
     def __init__(self) -> None:
         self._file_lines = []
-        self._line_tuples = []
+        self._problems = []
         self._selected_lines = []
         self._file_type = None
     
@@ -90,19 +91,20 @@ class SourceAnnotator():
         self._selected_lines = sorted(list(set([line for line in lines if ((line < num_lines) and (line >= 0))])))
         return self._selected_lines
     
-    def create_tuple(self) -> tuple:
-        """Form selected lines into tuple, append to list of tuples, and return the new tuple.
+    def create_problem(self, prob_type) -> Problem:
+        """Form selected lines into Problem, append to list of Problems, and return the new Problem.
         
         returns:
-            new_tuple: (tuple) The new tuple.
+            new_prob: (Problem) The new Problem.
         """
-        new_tuple = tuple(self._selected_lines)
-        self._line_tuples.append(new_tuple)
-        return new_tuple
+        new_prob = Problem(prob_type)
+        new_prob.line_tuples.append(tuple(self._selected_lines))
+        self._problems.append(new_prob)
+        return new_prob
     
-    def get_tuples(self) -> list:
-        """Return any tuples formed by create_tuple()"""
-        return self._line_tuples
+    def get_probs(self) -> list:
+        """Return any Problems formed by create_problem()"""
+        return self._problems
     
     def get_lines(self) -> list:
         """Prints contents of self._file_lines."""

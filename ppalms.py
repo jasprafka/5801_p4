@@ -1,6 +1,7 @@
 import os
 import sys
 import argparse
+from Problem import Problem
 from SourceAnnotator import SourceAnnotator
 
 from time import sleep
@@ -17,8 +18,8 @@ _MAIN_MENU = (
     "4. Strip line comments\n"
     "5. Select lines\n"
     "6. Show selected lines\n"
-    "7. Create Tuple\n"
-    "8. Get Tuples\n"
+    "7. Create Problem\n"
+    "8. Show Problems\n"
 )
 
 _SELECT_LINES_MENU = (
@@ -26,6 +27,12 @@ _SELECT_LINES_MENU = (
     "e.g. - \n1 2 5 7 10\n"
     "\nYour line selection: "
 )
+
+_PROBLEM_TYPES = {
+    1 : "randomize",
+    2 : "Multiple Choice",
+    4 : "Fill in the Blank"
+}
 
 def _parse_args(argv):
     parser = argparse.ArgumentParser(
@@ -153,9 +160,14 @@ def select_lines(annotator) -> bool:
 
     return False
 
+def print_prob_types():
+    print(f"\nProblem types:")
+    for item in _PROBLEM_TYPES.items():
+        print(f"{item[0]}: {item[1]}")
 
-def create_tuple(annotator) -> bool:
-    """Create a tuple from annotator._selected_lines if it is not None.
+def create_problem(annotator) -> bool:
+    """Create a Problem object from annotator._selected_lines if it is not None.
+    Prompt user for the type of problem.
 
     args:
         annotator: (SourceAnnotator) Pointer to SourceAnnotator instance
@@ -167,19 +179,23 @@ def create_tuple(annotator) -> bool:
     if not selected_lines:
         print("\t-- No lines selected!")
     else:
-        
-        new_tuple = tuple(selected_lines) 
-        if new_tuple in annotator.get_tuples():
-            already_created = input(f"\t-- Tuple {new_tuple} already created. Create it again? (y/n):")
+        print_prob_types()
+        prob_type = input(f"Enter the number of your choice: ")
+
+        new_problem = Problem(prob_type) 
+        new_problem.line_tuples.append(tuple(selected_lines))
+
+        if new_problem in annotator.get_probs():
+            already_created = input(f"\t-- Problem {new_problem} already created. Create it again? (y/n):")
             if already_created != 'y':
                 return False
 
-        print(f"\t-- Created tuple {annotator.create_tuple()}")
+        print(f"\t-- Created Problem {annotator.create_problem(prob_type)}")
     return False
     
 
-def get_tuples(annotator) -> bool:
-    """Print the line tuples in annotator._line_tuples.
+def show_probs(annotator) -> bool:
+    """Print the Problems in annotator._problems.
 
     args:
         annotator: (SourceAnnotator) Pointer to SourceAnnotator instance
@@ -187,11 +203,11 @@ def get_tuples(annotator) -> bool:
     returns:
         (bool) Returns false so main ppalms loop continues.
     """
-    tuples = annotator.get_tuples()
-    if not tuples:
-        print("\t-- No tuples created!")
+    probs = annotator.get_probs()
+    if not probs:
+        print("\t-- No Problems created!")
     else:
-        print(f"\t-- {tuples}")
+        print(f"\t-- {probs}")
     
     return False
 # ----------- END OPTION FUNCTIONS -----------
@@ -208,8 +224,8 @@ def main_loop(annotator):
         "4" : strip_comments,
         "5" : select_lines,
         "6" : show_selected_lines,
-        "7" : create_tuple,
-        "8" : get_tuples
+        "7" : create_problem,
+        "8" : show_probs
     }
 
     print_menu(None)
