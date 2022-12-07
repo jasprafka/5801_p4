@@ -20,6 +20,8 @@ _MAIN_MENU = (
     "6. Show selected lines\n"
     "7. Create Problem\n"
     "8. Show Problems\n"
+    "9. Input Number of Students\n"
+    "0. Print Number of Students\n"
 )
 
 _SELECT_LINES_MENU = (
@@ -33,6 +35,13 @@ _PROBLEM_TYPES = {
     2 : "Multiple Choice",
     4 : "Fill in the Blank"
 }
+
+_STUDENT_NUMBER = (
+    "Enter the number of students in your class: "
+)
+
+_DEFAULT_NUM_STUDENTS = 20
+_num_students = _DEFAULT_NUM_STUDENTS
 
 def _parse_args(argv):
     parser = argparse.ArgumentParser(
@@ -52,6 +61,13 @@ def _parse_args(argv):
 
     return args
 
+
+def print_prob_types():
+    print(f"\nProblem types:")
+    for item in _PROBLEM_TYPES.items():
+        print(f"{item[0]}: {item[1]}")
+
+    
 # ----------- BEGIN OPTION FUNCTIONS -----------
 """
 The following option functions all have the same 
@@ -73,6 +89,7 @@ def print_menu(unused_annotator) -> bool:
     print(_MAIN_MENU)
     return False
 
+
 def exit_ppalms(unused_annotator) -> bool:
     """Exit the main ppalms loop.
 
@@ -85,6 +102,7 @@ def exit_ppalms(unused_annotator) -> bool:
     """
     print("Goodbye!")
     return True
+
 
 def show_file(annotator) -> bool:
     """Print the contents of annotator._file_lines with line numbers.
@@ -160,10 +178,6 @@ def select_lines(annotator) -> bool:
 
     return False
 
-def print_prob_types():
-    print(f"\nProblem types:")
-    for item in _PROBLEM_TYPES.items():
-        print(f"{item[0]}: {item[1]}")
 
 def create_problem(annotator) -> bool:
     """Create a Problem object from annotator._selected_lines if it is not None.
@@ -210,6 +224,42 @@ def show_probs(annotator) -> bool:
         print(f"\t-- {probs}")
     
     return False
+
+
+def input_num_students(annotator):
+    """Prompt user to input the number of students. Validate input.
+
+    args:
+        annotator: (SourceAnnotator) Pointer to SourceAnnotator instance
+    
+    returns:
+        (bool) Returns false so main ppalms loop continues.
+    """
+    global _num_students
+    user_input = input(_STUDENT_NUMBER)
+
+    if not user_input.isdigit() or (int(user_input) < 0):
+        print(f"\t-- Sorry, number of students must be a positive integer.")
+        user_input = _DEFAULT_NUM_STUDENTS #default number
+    else:
+        _num_students = user_input
+    
+    return False
+
+
+def show_students(annotator):
+    """Print the number of students.
+
+    args:
+        annotator: (SourceAnnotator) Pointer to SourceAnnotator instance
+    
+    returns:
+        (bool) Returns false so main ppalms loop continues.
+    """
+    print(f"\t-- Current number of students: {_num_students}")
+    return False
+
+
 # ----------- END OPTION FUNCTIONS -----------
 
 
@@ -225,7 +275,9 @@ def main_loop(annotator):
         "5" : select_lines,
         "6" : show_selected_lines,
         "7" : create_problem,
-        "8" : show_probs
+        "8" : show_probs,
+        "9" : input_num_students,
+        "0" : show_students
     }
 
     print_menu(None)
