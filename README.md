@@ -17,10 +17,12 @@ The program runs on the command line, offering several options for source code a
 4. Strip line comments
 5. Select lines
 6. Show selected lines
-7. Create Tuple
-8. Get Tuples
+7. Create problem
+8. Show created problems
+9. Input students number
+0. show the number of students
 ```
-The user can input numbers 1-8 to make a choice.
+The user can input numbers 1-0 to make a choice.
 
 ## -- How to run the testing Suite --  
 This software package uses the python `unittest` library for testing. The testing files included are `SourceAnnotatorTest.py` and `PpalmsTest.py`.  
