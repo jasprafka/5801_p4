@@ -2,8 +2,10 @@ import unittest
 import io
 import sys
 from unittest.mock import MagicMock
+from unittest.mock import patch
 import SourceAnnotator
 from SourceAnnotatorTestCases import *
+from unittest import mock
 import ppalms
 
 
@@ -15,7 +17,9 @@ _FUNCTIONS = {
     "5": ppalms.select_lines,
     "6": ppalms.show_selected_lines,
     "7": ppalms.create_problem,
-    "8": ppalms.show_probs
+    "8": ppalms.show_probs,
+    "9": ppalms.input_num_students,
+    "0": ppalms.show_students
 }
 
 _MAIN_MENU = (
@@ -25,14 +29,23 @@ _MAIN_MENU = (
     "4. Strip line comments\n"
     "5. Select lines\n"
     "6. Show selected lines\n"
-    "7. Create Tuple\n"
-    "8. Get Tuples\n"
+    "7. Create Problem\n"
+    "8. Show Problems\n"
+    "9. Input Number of Students\n"
+    "0. Print Number of Students\n"
+)
+
+_TEST_OUTPUT=(
+    "Your line selection: 12 13 14\n"
+    "        -- Selected Lines: [12, 13, 15]\n"
+    "What would you like to do?\n"
+    "Your choice: "
 )
 
 
 class PpalmsTest(unittest.TestCase):
     """TestCase subclass to run unittests on all functions in ppalms.py"""
-
+    
     def setUp(self):  # Gets run before each test
         self.src_annotator = SourceAnnotator.SourceAnnotator()
         SourceAnnotator.print = MagicMock()
@@ -75,13 +88,17 @@ class PpalmsTest(unittest.TestCase):
         self.assertEqual(_FUNCTIONS.get("4")(self.src_annotator), False)
         sys.stdout = sys.__stdout__
 
-    # This test need the computer to input some words automatically, so it require some an extra package.
-    # But this package "pyautogui" is not installed on our lab machine.
-    # Hence, I comment out this test for now.
-
-    # def test_select_lines(self):
-        # self.src_annotator.upload_file(VALID_CPP_PATH)
-        #self.assertEqual(_FUNCTIONS.get("5")(self.src_annotator), False)
+    
+    string_of_ints = '12 13 14'
+    @patch('builtins.input', return_value=string_of_ints)
+    def test_select_lines(self,mock_input):
+        capturedOutput = io.StringIO()
+        sys.stdout = capturedOutput
+        self.src_annotator.upload_file(VALID_CPP_PATH)
+        result = ppalms.select_lines(self.src_annotator)
+        sys.stdout = sys.__stdout__
+        self.assertEqual(result, False)
+    
 
     def test_show_selected_lines(self):
         capturedOutput = io.StringIO()
@@ -90,19 +107,73 @@ class PpalmsTest(unittest.TestCase):
         self.assertEqual(_FUNCTIONS.get("6")(self.src_annotator), False)
         sys.stdout = sys.__stdout__
 
-    def test_create_tuple(self):
+    
+    def test_create_problem(self):
         capturedOutput = io.StringIO()
         sys.stdout = capturedOutput
         self.src_annotator.upload_file(VALID_CPP_PATH)
         self.assertEqual(_FUNCTIONS.get("7")(self.src_annotator), False)
         sys.stdout = sys.__stdout__
+        self.assertEqual(capturedOutput.getvalue(),"\t-- No lines selected!"+"\n")
 
-    def test_get_tuples(self):
+    string_of_ints = '1'
+    @patch('builtins.input', return_value=string_of_ints)
+    def test_create_problem_2(self,mock_input):
+        self.src_annotator.upload_file(VALID_CPP_PATH)
+        self.src_annotator.select_lines([12,13,14])
+        capturedOutput = io.StringIO()
+        sys.stdout = capturedOutput
+        self.assertEqual(_FUNCTIONS.get("7")(self.src_annotator), False)
+        sys.stdout = sys.__stdout__
+        self.assertEqual(capturedOutput.getvalue(),"\nProblem types:\n1: randomize\n2: Multiple Choice\n4: Fill in the Blank\n\t-- Created Problem Problem Type: 1\nLines:(12, 13, 14)\n")
+
+
+    def test_show_probs(self):
         capturedOutput = io.StringIO()
         sys.stdout = capturedOutput
         self.src_annotator.upload_file(VALID_CPP_PATH)
         self.assertEqual(_FUNCTIONS.get("8")(self.src_annotator), False)
         sys.stdout = sys.__stdout__
+        self.assertEqual(capturedOutput.getvalue(),"\t-- No Problems created!\n")
+
+    def test_show_probs_2(self):
+        self.src_annotator.upload_file(VALID_CPP_PATH)
+        self.src_annotator.select_lines([12,13,14])
+        self.src_annotator.create_problem(1)
+        capturedOutput = io.StringIO()
+        sys.stdout = capturedOutput
+        self.src_annotator.upload_file(VALID_CPP_PATH)
+        self.assertEqual(_FUNCTIONS.get("8")(self.src_annotator), False)
+        sys.stdout = sys.__stdout__
+        self.assertEqual(capturedOutput.getvalue(),"\t-- [Problem Type: 1\nLines:(12, 13, 14)]\n")
+
+    string_of_ints = '-1'
+    @patch('builtins.input', return_value=string_of_ints)
+    def test_input_num_students(self,mock_input):
+        self.src_annotator.upload_file(VALID_CPP_PATH)
+        capturedOutput = io.StringIO()
+        sys.stdout = capturedOutput
+        self.assertEqual(_FUNCTIONS.get("9")(self.src_annotator), False)
+        sys.stdout = sys.__stdout__
+        self.assertEqual(capturedOutput.getvalue(),"\t-- Sorry, number of students must be a positive integer.\n")
+
+    string_of_ints = '10'
+    @patch('builtins.input', return_value=string_of_ints)
+    def test_input_num_students_2(self,mock_input):
+        self.src_annotator.upload_file(VALID_CPP_PATH)
+        capturedOutput = io.StringIO()
+        sys.stdout = capturedOutput
+        self.assertEqual(_FUNCTIONS.get("9")(self.src_annotator), False)
+        sys.stdout = sys.__stdout__
+
+    def test_show_students(self):
+        self.src_annotator.upload_file(VALID_CPP_PATH)
+        capturedOutput = io.StringIO()
+        sys.stdout = capturedOutput
+        self.assertEqual(_FUNCTIONS.get("0")(self.src_annotator), False)
+        sys.stdout = sys.__stdout__
+        self.assertEqual(capturedOutput.getvalue(),"\t-- Current number of students: 10\n")
+        
 
 
 if __name__ == "__main__":

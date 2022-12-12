@@ -1,4 +1,6 @@
 import unittest
+import io
+import sys
 from unittest.mock import MagicMock
 import SourceAnnotator
 from SourceAnnotatorTestCases import *
@@ -57,17 +59,17 @@ class SourceAnnotatorTest(unittest.TestCase):
         self.assertNotEqual(lines, SELECTED_lINES)
         SourceAnnotator.len = len
     
-    def test_create_tuple(self):
-        SourceAnnotator.tuple = MagicMock(return_value=(LINE_TUPLE_1))
-        self.assertTupleEqual(self.src_annotator.create_problem(), (LINE_TUPLE_1))
-        self.assertTupleEqual(self.src_annotator._problems[0], (LINE_TUPLE_1))
-        SourceAnnotator.tuple = tuple
+    #def test_create_tuple(self):
+        #SourceAnnotator.tuple = MagicMock(return_value=(LINE_TUPLE_1))
+        #self.assertTupleEqual(self.src_annotator.create_problem(1), (LINE_TUPLE_1))
+        #self.assertTupleEqual(self.src_annotator._problems[0], (LINE_TUPLE_1))
+        #SourceAnnotator.tuple = tuple
         
     
-    def test_get_tuples(self):
-        self.assertFalse(self.src_annotator._problems)
-        self.src_annotator._problems = [LINE_TUPLE_1]
-        self.assertListEqual(self.src_annotator.get_probs(), [LINE_TUPLE_1])
+    #def test_get_tuples(self):
+        #self.assertFalse(self.src_annotator._problems)
+        #self.src_annotator._problems = [LINE_TUPLE_1]
+        #self.assertListEqual(self.src_annotator.get_probs(), [LINE_TUPLE_1])
 
     
     def test_get_lines(self):
@@ -79,6 +81,38 @@ class SourceAnnotatorTest(unittest.TestCase):
         self.assertFalse(self.src_annotator._selected_lines)
         self.src_annotator._selected_lines = SELECTED_lINES
         self.assertListEqual(self.src_annotator.get_selected_lines(), SELECTED_lINES)
+    
+    def test_create_pro(self):
+        SourceAnnotator.tuple = MagicMock(return_value=(LINE_TUPLE_1))
+        tmp = self.src_annotator.create_problem(1)
+        self.src_annotator.create_problem(2)
+        capturedOutput = io.StringIO()
+        sys.stdout = capturedOutput
+        print(tmp)
+        sys.stdout = sys.__stdout__
+        self.assertEqual(capturedOutput.getvalue(), "Problem Type: 1\nLines:(1, 2, 3, 4, 5, 6)\n")
+        capturedOutput = io.StringIO()
+        sys.stdout = capturedOutput
+        print(self.src_annotator._problems[1])
+        sys.stdout = sys.__stdout__
+        self.assertEqual(capturedOutput.getvalue(), "Problem Type: 2\nLines:(1, 2, 3, 4, 5, 6)\n")
+
+    def test_get_probs(self):
+        SourceAnnotator.tuple = MagicMock(return_value=(LINE_TUPLE_1))
+        tmp = self.src_annotator.get_probs()
+        capturedOutput = io.StringIO()
+        sys.stdout = capturedOutput
+        print(tmp)
+        sys.stdout = sys.__stdout__
+        self.assertEqual(capturedOutput.getvalue(), "[]\n")
+        self.src_annotator.create_problem(1)
+        self.src_annotator.create_problem(2)
+        tmp = self.src_annotator.get_probs()
+        capturedOutput = io.StringIO()
+        sys.stdout = capturedOutput
+        print(tmp)
+        sys.stdout = sys.__stdout__
+        self.assertEqual(capturedOutput.getvalue(), "[Problem Type: 1\nLines:(1, 2, 3, 4, 5, 6), Problem Type: 2\nLines:(1, 2, 3, 4, 5, 6)]\n")
 
 
 if __name__ == "__main__":
